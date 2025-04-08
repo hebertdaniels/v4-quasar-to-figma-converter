@@ -7,6 +7,9 @@ import { processLayoutComponents } from './layout/layout-components';
 import { processCardComponent } from './layout/card-component';
 import { processButtonComponent } from './form/button-component';
 
+// Declaração antecipada da função para evitar referência circular
+export async function processGenericComponent(node: QuasarNode, settings: PluginSettings): Promise<FrameNode>;
+
 /**
  * Função principal de conversão
  */
@@ -107,9 +110,9 @@ export async function convertQuasarToFigma(html: string, settings: PluginSetting
 }
 
 /**
- * Processar componente genérico quando não houver conversor específico
+ * Processa componente genérico quando não houver conversor específico
  */
-async function processGenericComponent(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
+export async function processGenericComponent(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
   const frame = figma.createFrame();
   frame.name = node.tagName || "generic-component";
   frame.layoutMode = "VERTICAL";
@@ -142,6 +145,82 @@ async function processGenericComponent(node: QuasarNode, settings: PluginSetting
     attrsText.fills = [{ type: 'SOLID', color: { r: 0.6, g: 0.6, b: 0.6 } }];
     
     frame.appendChild(attrsText);
+  }
+  
+  // Processar nós filhos recursivamente
+  if (node.childNodes && node.childNodes.length > 0) {
+    for (const child of node.childNodes) {
+      if (!child.tagName || child.tagName === '#text') {
+        // Processar nós de texto diretamente
+        if (child.text && child.text.trim()) {
+          const textNode = figma.createText();
+          await figma.loadFontAsync({ family: "Inter", style: "Regular" });
+          textNode.characters = child.text.trim();
+          textNode.fontSize = 14;
+          frame.appendChild(textNode);
+        }
+        continue;
+      }
+      
+      // Processar componentes filhos recursivamente
+      try {
+        // Para evitar recursão infinita, limitamos a profundidade com condições específicas
+        if (child.tagName.toLowerCase().startsWith('q-')) {
+          // Para componentes Quasar, tente processar usando a função apropriada
+          let childComponent: FrameNode | null = null;
+          
+          if (child.tagName.toLowerCase() === 'q-btn') {
+            childComponent = await processButtonComponent(child, settings);
+          } else if (child.tagName.toLowerCase() === 'q-card') {
+            childComponent = await processCardComponent(child, settings);
+          } else if (['q-input', 'q-select', 'q-checkbox', 'q-radio', 'q-toggle'].includes(child.tagName.toLowerCase())) {
+            childComponent = await processFormComponents(child, settings);
+          } else {
+            // Criar um componente simples para outros tipos
+            const simpleFrame = figma.createFrame();
+            simpleFrame.name = child.tagName;
+            simpleFrame.layoutMode = "VERTICAL";
+            simpleFrame.primaryAxisSizingMode = "AUTO";
+            simpleFrame.counterAxisSizingMode = "AUTO";
+            
+            const childText = figma.createText();
+            await figma.loadFontAsync({ family: "Inter", style: "Regular" });
+            childText.characters = `${child.tagName}`;
+            childText.fontSize = 12;
+            simpleFrame.appendChild(childText);
+            
+            childComponent = simpleFrame;
+          }
+          
+          if (childComponent) {
+            frame.appendChild(childComponent);
+          }
+        } else {
+          // Para elementos HTML comuns (div, span, etc.), criar representação simples
+          const genericFrame = figma.createFrame();
+          genericFrame.name = child.tagName;
+          genericFrame.layoutMode = "VERTICAL";
+          genericFrame.primaryAxisSizingMode = "AUTO";
+          genericFrame.counterAxisSizingMode = "AUTO";
+          genericFrame.fills = [{ type: 'SOLID', color: { r: 0.95, g: 0.95, b: 0.95 } }];
+          genericFrame.paddingLeft = 8;
+          genericFrame.paddingRight = 8;
+          genericFrame.paddingTop = 8;
+          genericFrame.paddingBottom = 8;
+          
+          // Adicionar texto de label
+          const labelText = figma.createText();
+          await figma.loadFontAsync({ family: "Inter", style: "Regular" });
+          labelText.characters = child.tagName;
+          labelText.fontSize = 12;
+          genericFrame.appendChild(labelText);
+          
+          frame.appendChild(genericFrame);
+        }
+      } catch (error) {
+        console.error(`Erro ao processar filho (${child.tagName}):`, error);
+      }
+    }
   }
   
   return frame;

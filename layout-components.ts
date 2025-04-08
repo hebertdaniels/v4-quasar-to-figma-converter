@@ -286,9 +286,9 @@ async function processToolbar(node: QuasarNode, settings: PluginSettings): Promi
   return toolbarFrame;
 }
 
-//**
-* Processa um footer
-*/
+/**
+ * Processa um footer
+ */
 async function processFooter(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
  const footerFrame = figma.createFrame();
  footerFrame.name = "q-footer";

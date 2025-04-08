@@ -242,7 +242,7 @@ async function processQCheckbox(node: QuasarNode, settings: PluginSettings): Pro
   
   // Verificar se está marcado
   const isChecked = props.value === 'true' || props.checked === 'true' ||
-                   'value' in props || 'checked' in props;
+                    'value' in props || 'checked' in props;
   
   if (isChecked && settings.preserveQuasarColors) {
     // Estilo marcado
@@ -273,3 +273,279 @@ async function processQCheckbox(node: QuasarNode, settings: PluginSettings): Pro
       fontSize: 14
     });
     if (labelNode) {
+      labelNode.name = "q-checkbox__label";
+      checkboxFrame.appendChild(labelNode);
+    }
+  }
+  
+  return checkboxFrame;
+}
+
+/**
+ * Processa um componente q-radio
+ */
+async function processQRadio(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
+  const radioFrame = figma.createFrame();
+  radioFrame.name = "q-radio";
+  radioFrame.layoutMode = "HORIZONTAL";
+  radioFrame.primaryAxisSizingMode = "AUTO";
+  radioFrame.counterAxisSizingMode = "AUTO";
+  radioFrame.primaryAxisAlignItems = "CENTER";
+  radioFrame.counterAxisAlignItems = "CENTER";
+  radioFrame.itemSpacing = 8;
+  radioFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
+  
+  // Extrair propriedades
+  const { props, styles } = extractStylesAndProps(node);
+  
+  // Cor do radio
+  let radioColor = quasarColors.primary;
+  if (props.color && isQuasarColorKey(props.color) && settings.preserveQuasarColors) {
+    radioColor = quasarColors[props.color];
+  }
+  
+  // Criar o círculo do radio
+  const circleFrame = figma.createEllipse();
+  circleFrame.name = "q-radio__inner";
+  circleFrame.resize(20, 20);
+  
+  // Verificar se está marcado
+  const isChecked = props.value === 'true' || 'value' in props;
+  
+  if (isChecked && settings.preserveQuasarColors) {
+    // Estilo marcado
+    circleFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+    circleFrame.strokes = [{ type: 'SOLID', color: radioColor }];
+    circleFrame.strokeWeight = 2;
+    
+    // Adicionar o círculo interno
+    const innerCircle = figma.createEllipse();
+    innerCircle.name = "q-radio__dot";
+    innerCircle.resize(10, 10);
+    innerCircle.x = 5;
+    innerCircle.y = 5;
+    innerCircle.fills = [{ type: 'SOLID', color: radioColor }];
+    circleFrame.appendChild(innerCircle);
+  } else {
+    // Estilo desmarcado
+    circleFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+    circleFrame.strokes = [{ type: 'SOLID', color: { r: 0.7, g: 0.7, b: 0.7 } }];
+    circleFrame.strokeWeight = 1;
+  }
+  
+  radioFrame.appendChild(circleFrame);
+  
+  // Adicionar label
+  if (props.label) {
+    const labelNode = await createText(props.label, {
+      fontSize: 14
+    });
+    if (labelNode) {
+      labelNode.name = "q-radio__label";
+      radioFrame.appendChild(labelNode);
+    }
+  }
+  
+  return radioFrame;
+}
+
+/**
+ * Processa um componente q-toggle
+ */
+async function processQToggle(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
+  const toggleFrame = figma.createFrame();
+  toggleFrame.name = "q-toggle";
+  toggleFrame.layoutMode = "HORIZONTAL";
+  toggleFrame.primaryAxisSizingMode = "AUTO";
+  toggleFrame.counterAxisSizingMode = "AUTO";
+  toggleFrame.primaryAxisAlignItems = "CENTER";
+  toggleFrame.counterAxisAlignItems = "CENTER";
+  toggleFrame.itemSpacing = 8;
+  toggleFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
+  
+  // Extrair propriedades
+  const { props, styles } = extractStylesAndProps(node);
+  
+  // Cor do toggle
+  let toggleColor = quasarColors.primary;
+  if (props.color && isQuasarColorKey(props.color) && settings.preserveQuasarColors) {
+    toggleColor = quasarColors[props.color];
+  }
+  
+  // Criar o track do toggle
+  const trackFrame = figma.createFrame();
+  trackFrame.name = "q-toggle__track";
+  trackFrame.resize(36, 14);
+  trackFrame.cornerRadius = 7;
+  
+  // Verificar se está ativado
+  const isActive = props.value === 'true' || props.checked === 'true' ||
+                  'value' in props || 'checked' in props;
+  
+  // Definir cor do track com base no estado
+  if (isActive && settings.preserveQuasarColors) {
+    trackFrame.fills = [{ type: 'SOLID', color: toggleColor, opacity: 0.5 }];
+  } else {
+    trackFrame.fills = [{ type: 'SOLID', color: { r: 0.5, g: 0.5, b: 0.5 }, opacity: 0.3 }];
+  }
+  
+  // Criar o thumb do toggle
+  const thumbFrame = figma.createFrame();
+  thumbFrame.name = "q-toggle__thumb";
+  thumbFrame.resize(20, 20);
+  thumbFrame.cornerRadius = 10;
+  
+  // Posicionar o thumb conforme o estado
+  if (isActive) {
+    thumbFrame.x = 16;
+    thumbFrame.y = -3;
+    thumbFrame.fills = [{ type: 'SOLID', color: toggleColor }];
+  } else {
+    thumbFrame.x = 0;
+    thumbFrame.y = -3;
+    thumbFrame.fills = [{ type: 'SOLID', color: { r: 0.9, g: 0.9, b: 0.9 } }];
+  }
+  
+  // Adicionar sombra ao thumb
+  thumbFrame.effects = [
+    createShadowEffect(0, 1, 3, 0.2)
+  ];
+  
+  trackFrame.appendChild(thumbFrame);
+  toggleFrame.appendChild(trackFrame);
+  
+  // Adicionar label
+  if (props.label) {
+    const labelNode = await createText(props.label, {
+      fontSize: 14
+    });
+    if (labelNode) {
+      labelNode.name = "q-toggle__label";
+      toggleFrame.appendChild(labelNode);
+    }
+  }
+  
+  return toggleFrame;
+}
+
+/**
+ * Processa um componente q-form
+ */
+async function processQForm(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
+  const formFrame = figma.createFrame();
+  formFrame.name = "q-form";
+  formFrame.layoutMode = "VERTICAL";
+  formFrame.primaryAxisSizingMode = "AUTO";
+  formFrame.counterAxisSizingMode = "AUTO";
+  formFrame.itemSpacing = 16;
+  formFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
+  
+  // Extrair propriedades
+  const { props, styles } = extractStylesAndProps(node);
+  
+  // Processar filhos
+  for (const child of node.childNodes) {
+    if (!child.tagName || child.tagName === '#text') continue;
+    
+    try {
+      // Processar componente filho
+      const childComponent = await processFormComponents(child, settings);
+      if (childComponent) {
+        formFrame.appendChild(childComponent);
+      }
+    } catch (error) {
+      console.error(`Erro ao processar filho do form (${child.tagName}):`, error);
+    }
+  }
+  
+  // Se não tiver filhos, adicionar um exemplo de campo
+  if (formFrame.children.length === 0) {
+    const exampleInput = await processQInput({
+      tagName: 'q-input',
+      attributes: {
+        label: 'Exemplo de campo',
+        outlined: 'true'
+      },
+      childNodes: []
+    }, settings);
+    
+    formFrame.appendChild(exampleInput);
+  }
+  
+  return formFrame;
+}
+
+/**
+ * Processa um componente q-field
+ */
+async function processQField(node: QuasarNode, settings: PluginSettings): Promise<FrameNode> {
+  // q-field é semelhante a q-input mas mais genérico
+  const fieldFrame = figma.createFrame();
+  fieldFrame.name = "q-field";
+  fieldFrame.layoutMode = "VERTICAL";
+  fieldFrame.primaryAxisSizingMode = "AUTO";
+  fieldFrame.counterAxisSizingMode = "AUTO";
+  fieldFrame.itemSpacing = 4;
+  fieldFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
+  
+  // Extrair propriedades
+  const { props, styles } = extractStylesAndProps(node);
+  
+  // Criar label se existir
+  if (props.label) {
+    const labelNode = await createText(props.label, {
+      fontSize: 14,
+      fontWeight: 'medium',
+      color: { r: 0.4, g: 0.4, b: 0.4 }
+    });
+    if (labelNode) {
+      labelNode.name = "q-field__label";
+      fieldFrame.appendChild(labelNode);
+    }
+  }
+  
+  // Container para o campo
+  const controlFrame = figma.createFrame();
+  controlFrame.name = "q-field__control";
+  controlFrame.layoutMode = "HORIZONTAL";
+  controlFrame.primaryAxisSizingMode = "FIXED";
+  controlFrame.counterAxisSizingMode = "AUTO";
+  setNodeSize(controlFrame, 250);
+  controlFrame.paddingLeft = 12;
+  controlFrame.paddingRight = 12;
+  controlFrame.paddingTop = 8;
+  controlFrame.paddingBottom = 8;
+  controlFrame.itemSpacing = 8;
+  
+  // Definir aparência do field
+  controlFrame.fills = [{ type: 'SOLID', color: { r: 0.98, g: 0.98, b: 0.98 } }];
+  controlFrame.cornerRadius = 4;
+  
+  // Processar conteúdo personalizado do field
+  // (Em um cenário real, precisaríamos processar os slots, mas vamos simplificar)
+  
+  // Texto padrão para o conteúdo
+  const contentText = await createText("Conteúdo do field", {
+    fontSize: 14,
+    color: { r: 0.3, g: 0.3, b: 0.3 }
+  });
+  
+  if (contentText) {
+    controlFrame.appendChild(contentText);
+  }
+  
+  fieldFrame.appendChild(controlFrame);
+  
+  // Adicionar mensagem de erro/hint
+  if (props.hint && !props.error) {
+    const hintNode = await createText(props.hint, {
+      fontSize: 12,
+      color: { r: 0.6, g: 0.6, b: 0.6 }
+    });
+    if (hintNode) {
+      fieldFrame.appendChild(hintNode);
+    }
+  }
+  
+  return fieldFrame;
+}
