@@ -3,40 +3,142 @@
 <head>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Inter, sans-serif;
       margin: 0;
-      padding: 16px;
+      padding: 0;
+      color: #333;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
     
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      padding: 16px;
+      background-color: #18A0FB;
+      color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
     .header h2 {
       margin: 0;
       font-size: 16px;
+      font-weight: 600;
     }
     
     .close-button {
       background: none;
       border: none;
       cursor: pointer;
+      color: white;
       font-size: 16px;
+    }
+    
+    .main-content {
+      padding: 16px;
+      overflow-y: auto;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .code-input-section {
+      background-color: white;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      color: #333;
     }
     
     .code-input {
       width: 100%;
-      height: 200px;
-      padding: 8px;
-      margin-bottom: 16px;
-      border: 1px solid #ccc;
+      height: 180px;
+      padding: 12px;
+      border: 1px solid #E0E0E0;
       border-radius: 4px;
-      font-family: monospace;
+      font-family: 'Courier New', monospace;
       font-size: 12px;
       resize: vertical;
+      box-sizing: border-box;
+    }
+    
+    .example-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .example-button {
+      background-color: #f1f1f1;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .example-button:hover {
+      background-color: #e5e5e5;
+    }
+    
+    .settings-section {
+      background-color: white;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .option-group {
+      margin-bottom: 16px;
+    }
+    
+    .option-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    .option-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    
+    .checkbox-option {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .checkbox-option input[type="checkbox"] {
+      margin-right: 8px;
+    }
+    
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #E0E0E0;
+      border-radius: 4px;
+      font-size: 14px;
+      background-color: white;
+    }
+    
+    .component-groups {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
     }
     
     .convert-button {
@@ -44,21 +146,28 @@
       color: white;
       border: none;
       border-radius: 4px;
-      padding: 8px 16px;
+      padding: 10px 16px;
       font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
-      margin-bottom: 16px;
-      width: 100%;
+      transition: background-color 0.2s;
+      align-self: center;
+      margin-top: 8px;
     }
     
     .convert-button:hover {
       background-color: #0D8EE0;
     }
     
+    .convert-button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    
     .feedback {
       padding: 12px;
-      margin-top: 16px;
       border-radius: 4px;
+      font-size: 14px;
       display: none;
     }
     
@@ -84,21 +193,49 @@
       max-height: 200px;
       overflow-y: auto;
       display: none;
+      font-family: 'Courier New', monospace;
+      white-space: pre;
     }
     
-    .example-buttons {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    
-    .example-button {
-      background-color: #f0f0f0;
-      border: 1px solid #ddd;
+    .limitations-info {
+      background-color: #FFF8E1;
+      border: 1px solid #FFE082;
       border-radius: 4px;
-      padding: 4px 8px;
+      padding: 12px 16px;
+      margin-top: 16px;
       font-size: 12px;
-      cursor: pointer;
+    }
+    
+    .limitations-info h3 {
+      font-size: 14px;
+      margin: 0 0 8px 0;
+      color: #FF8F00;
+    }
+    
+    .limitations-info ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    
+    .limitations-info li {
+      margin-bottom: 4px;
+    }
+    
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #18A0FB;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -108,23 +245,104 @@
     <button class="close-button" id="close-button">✕</button>
   </div>
   
-  <div class="example-buttons">
-    <button class="example-button" id="example-button-button">Botão</button>
-    <button class="example-button" id="example-button-card">Card</button>
-  </div>
-  
-  <textarea 
-    class="code-input" 
-    id="code-input" 
-    placeholder="Cole aqui o código Vue.js/Quasar (incluindo as seções <template> e <script>)"></textarea>
-  
-  <button class="convert-button" id="convert-button">Converter para Figma</button>
-  
-  <div id="feedback" class="feedback"></div>
-  
-  <div id="component-preview" class="component-preview">
-    <h3>Estrutura do componente:</h3>
-    <pre id="component-structure"></pre>
+  <div class="main-content">
+    <div class="code-input-section">
+      <div class="section-title">Código do Componente Quasar</div>
+      <textarea 
+        class="code-input" 
+        id="code-input" 
+        placeholder="Cole aqui o código Vue.js/Quasar (incluindo as seções <template> e <script>)"></textarea>
+      
+      <div class="example-buttons">
+        <div class="section-title">Exemplos:</div>
+        <button class="example-button" id="example-button-button">Botão</button>
+        <button class="example-button" id="example-button-input">Input</button>
+        <button class="example-button" id="example-button-card">Card</button>
+        <button class="example-button" id="example-button-form">Form</button>
+        <button class="example-button" id="example-button-layout">Layout</button>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="section-title">Opções de Conversão</div>
+      
+      <div class="option-group">
+        <div class="checkbox-option">
+          <input type="checkbox" id="preserve-colors" checked>
+          <label for="preserve-colors">Preservar cores do Quasar</label>
+        </div>
+        
+        <div class="checkbox-option">
+          <input type="checkbox" id="create-component-variants" checked>
+          <label for="create-component-variants">Criar variantes para estados (quando possível)</label>
+        </div>
+        
+        <div class="checkbox-option">
+          <input type="checkbox" id="use-auto-layout" checked>
+          <label for="use-auto-layout">Usar Auto Layout para layout flexbox</label>
+        </div>
+      </div>
+      
+      <div class="option-group">
+        <label class="option-label">Densidade dos componentes:</label>
+        <select id="component-density">
+          <option value="default">Padrão</option>
+          <option value="comfortable">Confortável</option>
+          <option value="compact">Compacto</option>
+        </select>
+      </div>
+      
+      <div class="option-group">
+        <label class="option-label">Tema de cores:</label>
+        <select id="color-theme">
+          <option value="quasar-default">Quasar Padrão</option>
+          <option value="material">Material Design</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </div>
+      
+      <div class="option-group">
+        <label class="option-label">Filtro de Componentes:</label>
+        <div class="component-groups">
+          <div class="checkbox-option">
+            <input type="checkbox" class="component-group" value="form" id="group-form" checked>
+            <label for="group-form">Formulários</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" class="component-group" value="layout" id="group-layout" checked>
+            <label for="group-layout">Layout</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" class="component-group" value="navigation" id="group-navigation" checked>
+            <label for="group-navigation">Navegação</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" class="component-group" value="display" id="group-display" checked>
+            <label for="group-display">Exibição</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <button class="convert-button" id="convert-button">Converter para Figma</button>
+    
+    <div id="feedback" class="feedback"></div>
+    
+    <div id="component-preview" class="component-preview">
+      <h3>Estrutura do componente:</h3>
+      <pre id="component-structure"></pre>
+    </div>
+    
+    <div class="limitations-info">
+      <h3>Limitações Conhecidas</h3>
+      <ul>
+        <li><strong>Comportamentos dinâmicos</strong>: Estados como hover, focus e active não podem ser totalmente representados no Figma.</li>
+        <li><strong>CSS externo</strong>: Apenas estilos inline e classes do Quasar são processados.</li>
+        <li><strong>Componentes customizados</strong>: Apenas componentes nativos do Quasar são suportados.</li>
+        <li><strong>Propriedades computadas</strong>: Props dinâmicas baseadas em lógica não são avaliadas.</li>
+        <li><strong>Slots com conteúdo dinâmico</strong>: Não é possível representar slots totalmente.</li>
+      </ul>
+    </div>
   </div>
   
   <script>
@@ -133,13 +351,119 @@
       button: `<template>
   <q-btn color="primary" label="Botão Exemplo" />
 </template>`,
+      input: `<template>
+  <q-input outlined v-model="text" label="Exemplo de Input" />
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      text: ''
+    }
+  }
+}
+</script>`,
       card: `<template>
   <q-card class="my-card">
     <q-card-section>
       <div class="text-h6">Título do Card</div>
       <div class="text-subtitle2">Subtítulo</div>
     </q-card-section>
+    
+    <q-separator />
+    
+    <q-card-actions align="right">
+      <q-btn flat label="Cancelar" color="primary" />
+      <q-btn unelevated label="OK" color="primary" />
+    </q-card-actions>
   </q-card>
+</template>`,
+      form: `<template>
+  <q-form @submit="onSubmit" class="q-gutter-md">
+    <q-input
+      filled
+      v-model="name"
+      label="Seu nome *"
+      hint="Nome e sobrenome"
+      lazy-rules
+    />
+
+    <q-input
+      filled
+      type="number"
+      v-model="age"
+      label="Sua idade *"
+      lazy-rules
+    />
+
+    <q-toggle v-model="accept" label="Eu aceito os termos e condições" />
+
+    <div>
+      <q-btn label="Enviar" type="submit" color="primary"/>
+      <q-btn label="Limpar" type="reset" color="primary" flat class="q-ml-sm" />
+    </div>
+  </q-form>
+</template>
+
+<script>
+export default {
+  data () {
+    return {
+      name: null,
+      age: null,
+      accept: false
+    }
+  },
+  methods: {
+    onSubmit () {
+      console.log('Formulário enviado')
+    }
+  }
+}
+</script>`,
+      layout: `<template>
+  <q-layout view="lHh Lpr lFf">
+    <q-header elevated>
+      <q-toolbar>
+        <q-btn
+          flat
+          dense
+          round
+          icon="menu"
+          aria-label="Menu"
+        />
+        <q-toolbar-title>
+          App Título
+        </q-toolbar-title>
+        <q-btn flat round dense icon="notifications" />
+      </q-toolbar>
+    </q-header>
+
+    <q-drawer
+      show-if-above
+      bordered
+    >
+      <q-list>
+        <q-item clickable v-ripple>
+          <q-item-section>Home</q-item-section>
+        </q-item>
+        <q-item clickable v-ripple>
+          <q-item-section>Perfil</q-item-section>
+        </q-item>
+        <q-item clickable v-ripple>
+          <q-item-section>Configurações</q-item-section>
+        </q-item>
+      </q-list>
+    </q-drawer>
+
+    <q-page-container>
+      <q-page padding>
+        <!-- Conteúdo da página aqui -->
+        <p>Conteúdo da página principal</p>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>`
     };
     
@@ -150,16 +474,34 @@
     const feedback = document.getElementById('feedback');
     const componentPreview = document.getElementById('component-preview');
     const componentStructure = document.getElementById('component-structure');
-    const exampleButtonButton = document.getElementById('example-button-button');
-    const exampleButtonCard = document.getElementById('example-button-card');
     
-    // Preencher exemplos
-    exampleButtonButton.addEventListener('click', function() {
+    // Configurações
+    const preserveColorsCheckbox = document.getElementById('preserve-colors');
+    const createVariantsCheckbox = document.getElementById('create-component-variants');
+    const useAutoLayoutCheckbox = document.getElementById('use-auto-layout');
+    const componentDensitySelect = document.getElementById('component-density');
+    const colorThemeSelect = document.getElementById('color-theme');
+    const componentGroupCheckboxes = document.querySelectorAll('.component-group');
+    
+    // Botões de exemplo
+    document.getElementById('example-button-button').addEventListener('click', function() {
       codeInput.value = examples.button;
     });
     
-    exampleButtonCard.addEventListener('click', function() {
+    document.getElementById('example-button-input').addEventListener('click', function() {
+      codeInput.value = examples.input;
+    });
+    
+    document.getElementById('example-button-card').addEventListener('click', function() {
       codeInput.value = examples.card;
+    });
+    
+    document.getElementById('example-button-form').addEventListener('click', function() {
+      codeInput.value = examples.form;
+    });
+    
+    document.getElementById('example-button-layout').addEventListener('click', function() {
+      codeInput.value = examples.layout;
     });
     
     // Botão fechar
@@ -171,6 +513,23 @@
         }
       }, '*');
     });
+    
+    // Obter configurações atuais
+    function getSettings() {
+      const componentGroups = {};
+      componentGroupCheckboxes.forEach(checkbox => {
+        componentGroups[checkbox.value] = checkbox.checked;
+      });
+      
+      return {
+        preserveQuasarColors: preserveColorsCheckbox.checked,
+        createComponentVariants: createVariantsCheckbox.checked,
+        useAutoLayout: useAutoLayoutCheckbox.checked,
+        componentDensity: componentDensitySelect.value,
+        colorTheme: colorThemeSelect.value,
+        componentGroups
+      };
+    }
     
     // Botão converter
     convertButton.addEventListener('click', function() {
@@ -188,15 +547,43 @@
         return;
       }
       
-      showFeedback('Convertendo o componente...');
+      // Desativar botão e mostrar spinner
+      convertButton.disabled = true;
+      showFeedback('<div class="spinner"></div> Convertendo o componente...');
+      
+      // Obter configurações atuais
+      const settings = getSettings();
       
       // Enviar o código para o script do plugin
       parent.postMessage({
         pluginMessage: {
           type: 'convert-code',
-          code: code
+          code: code,
+          settings: settings
         }
       }, '*');
+    });
+    
+    // Atualizar configurações quando alteradas
+    function updateSettings() {
+      const settings = getSettings();
+      
+      parent.postMessage({
+        pluginMessage: {
+          type: 'update-settings',
+          settings: settings
+        }
+      }, '*');
+    }
+    
+    // Adicionar listeners para alterações nas configurações
+    preserveColorsCheckbox.addEventListener('change', updateSettings);
+    createVariantsCheckbox.addEventListener('change', updateSettings);
+    useAutoLayoutCheckbox.addEventListener('change', updateSettings);
+    componentDensitySelect.addEventListener('change', updateSettings);
+    colorThemeSelect.addEventListener('change', updateSettings);
+    componentGroupCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', updateSettings);
     });
     
     // Receber mensagens do plugin
@@ -212,20 +599,28 @@
       
       if (message.type === 'conversion-success') {
         showFeedback('Componente convertido com sucesso!', 'success');
+        convertButton.disabled = false;
         
         // Mostrar estrutura do componente
-        componentStructure.textContent = message.structure;
+        componentStructure.textContent = message.structure || "Componente criado";
         componentPreview.style.display = 'block';
       } 
       else if (message.type === 'conversion-error') {
         showFeedback('Erro na conversão: ' + message.error, 'error');
         componentPreview.style.display = 'none';
+        convertButton.disabled = false;
+      }
+      else if (message.type === 'processing-update') {
+        showFeedback(message.message + (message.layoutType ? ` (${message.layoutType})` : ''));
+      }
+      else if (message.type === 'settings-updated') {
+        console.log('Configurações atualizadas:', message.settings);
       }
     };
     
     // Mostrar feedback
     function showFeedback(message, type) {
-      feedback.textContent = message;
+      feedback.innerHTML = message;
       feedback.style.display = 'block';
       
       if (type) {

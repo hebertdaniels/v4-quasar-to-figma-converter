@@ -2,8 +2,8 @@
   "name": "Quasar to Figma Converter",
   "id": "quasar-to-figma-converter",
   "api": "1.0.0",
-  "main": "code.js",
-  "ui": "ui.html",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
   "editorType": ["figma"],
   "menu": [
     {
@@ -11,5 +11,5 @@
       "command": "open-plugin"
     }
   ],
-  "permissions": ["currentuser"]
+  "permissions": []
 }
