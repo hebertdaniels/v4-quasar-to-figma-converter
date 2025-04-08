@@ -325,7 +325,16 @@ async function processQRadio(node: QuasarNode, settings: PluginSettings): Promis
     innerCircle.x = 5;
     innerCircle.y = 5;
     innerCircle.fills = [{ type: 'SOLID', color: radioColor }];
-    circleFrame.appendChild(innerCircle);
+    
+    // Criar um frame container para conter o círculo e seu indicador interno
+    const circleContainer = figma.createFrame();
+    circleContainer.name = "q-radio__container";
+    circleContainer.resize(20, 20);
+    circleContainer.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0 }];
+    circleContainer.appendChild(circleFrame);
+    circleContainer.appendChild(innerCircle);
+    radioFrame.appendChild(circleContainer);
+    
   } else {
     // Estilo desmarcado
     circleFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];

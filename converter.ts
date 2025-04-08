@@ -7,9 +7,6 @@ import { processLayoutComponents } from './layout/layout-components';
 import { processCardComponent } from './layout/card-component';
 import { processButtonComponent } from './form/button-component';
 
-// Declaração antecipada da função para evitar referência circular
-export async function processGenericComponent(node: QuasarNode, settings: PluginSettings): Promise<FrameNode>;
-
 /**
  * Função principal de conversão
  */
